@@ -1,0 +1,12 @@
+domains
+X=symbol*
+Y=symbol
+predicates
+inter(X,X,X)
+member(Y,X)
+clauses
+inter([],_[]).
+inter([H|T],L,[H|Lr]):-member(H,L),inter(T,L,Lr),!.
+inter([H|T],L,Lr):-not(member(H,L)),inter(T,L,Lr).
+member(H,[H|_]).
+member(H,[_|L]):-member(H,L).
