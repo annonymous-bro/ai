@@ -14,3 +14,6 @@ clauses
 	print(A,C),move(N1,B,A,C).
 	print(Loc1,Loc2):-nl,
 	write("move a disk from ",Loc1," to ",Loc2).
+
+
+goal: hanoid(no. of disk)
