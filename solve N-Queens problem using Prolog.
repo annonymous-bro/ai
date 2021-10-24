@@ -21,3 +21,5 @@ clauses
 	member(X,[X|_]).
 	member(X,[_|Z]):-
 	member(X,Z).
+
+Goal: solution([c(1,A),c(2,B)])
