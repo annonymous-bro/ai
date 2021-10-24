@@ -121,3 +121,8 @@ location([Tile|_], Tile, N, Row, Col):-!,
 location([_|Tiles], Tile, N, Row, Col):-
   N1 = N + 1,
   location(Tiles, Tile, N1, Row, Col).
+  
+  
+  
+  
+  goal: go(8,A)
