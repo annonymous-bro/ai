@@ -8,3 +8,7 @@ clauses
  sum([X|List],S) :-
  sum(List,S1),
  S = X + S1.
+ 
+ goal:
+ sum([4,6,8],X)
+ 
