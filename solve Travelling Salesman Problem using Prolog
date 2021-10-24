@@ -16,3 +16,6 @@ route(Town1,Town2,Distance):-
 road(Town1,X,Dist1),
 route(X,Town2,Dist2),
 Distance=Dist1+Dist2,!.
+
+
+goal : route("tampa","kansa_city",X),write("Distance from tampa to kansas city",X),nl.
