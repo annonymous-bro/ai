@@ -1,0 +1,97 @@
+#include<stdio.h>
+#include<conio.h>
+#include<string.h>
+int ok(int grid[3][3]);
+int solve(int grid[3][3]);
+int convert_to_position(int i, int j);
+int get_pos(int number,int grid[3][3]);
+void swap(int pos1,int pos2, int grid[3][3]);
+void display_grid(int grid[3][3]);
+int main()
+{
+int grid[3][3],swaps,i,j;
+do
+{
+printf("Enter the no.[row wise:]\n");
+for(i=0;i<3;i++)
+{
+for(j=0;j<3;j++)
+scanf("%d",&grid[i][j]);
+}
+if(!ok(grid))
+printf("Invalid input!\n");
+}while(!ok(grid));
+swaps = solve(grid);
+printf("Sol. obtained after %d swaps!\n",swaps);
+}
+int ok(int grid[3][3])
+
+{
+char pattern[10] = {0};
+int i,j;
+for(i=0;i<3;i++)
+{
+for(j=0;j<3;j++)
+if(grid[i][j]>=0 && grid[i][j]<=8) pattern[convert_to_position(i,j)] ='1';
+}
+return strncmp(pattern,"111111111",9) == 0;
+}
+int solve(int grid[3][3])
+{
+int pos;
+int number;
+int swaps=0;
+for(pos=0; pos<8; pos++)
+{
+number = pos+1;
+if(get_pos(number,grid) != pos)
+{
+swap(pos,get_pos(0,grid),grid);
+display_grid(grid);
+swaps++;
+swap(get_pos(number,grid),pos,grid);
+display_grid(grid);
+swaps++;
+}
+}
+return swaps;
+
+}
+int convert_to_position(int i,int j)
+{
+return 3*i+j;
+}
+int get_pos(int number,int grid[3][3])
+{
+int i,j;
+for(i=0;i<3;i++)
+{
+for(j=0;j<3;j++)
+if(grid[i][j] == number) return convert_to_position(i,j);
+}
+return 0;
+}
+void swap(int pos1, int pos2, int grid[3][3])
+{
+int row1, col1, row2, col2;
+int temp;
+row1 = pos1/3;
+col1 = pos1%3;
+row2 = pos2/3;
+col2 = pos2%3;
+temp = grid[row1][col1];
+grid[row1][col1] = grid[row2][col2];
+grid[row2][col2] = temp;
+}
+void display_grid(int grid[3][3])
+{
+int i,j;
+
+for(i=0;i<3;i++)
+{
+for(j=0;j<3;j++)
+printf("%3d",grid[i][j]);
+printf("\n");
+}
+printf("\n");
+}
