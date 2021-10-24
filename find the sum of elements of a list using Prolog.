@@ -1,0 +1,10 @@
+domains
+ x = integer
+ l = integer*
+predicates
+ sum(l,x)
+clauses
+ sum([],0).
+ sum([X|List],S) :-
+ sum(List,S1),
+ S = X + S1.
