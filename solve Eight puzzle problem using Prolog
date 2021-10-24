@@ -1,0 +1,123 @@
+code = 2048
+check_determ
+domains
+  value = integer
+  move  = integer
+  posn  = move*
+  moves = move*
+  posns = posn*
+database
+  limit(value)
+predicates
+  go(integer,moves)
+  game(integer,posn,posn)
+  idastar(posn,posn,moves)
+  nondeterm idastar_1(posns,posn,value,value,value,moves)
+  nondeterm member(posn,posns)
+  nondeterm update(posn,move,posn)
+  value(posn,posn,value)
+  value_1(posn,posn,value,value,value)
+  location(posn,move,value,value,value)
+clauses
+
+go(I, Moves):-
+  game(I, Initial, Final),
+  idastar(Initial, Final, Moves).
+
+game( 0, [7,1,6,5,0,2,4,3,8], [7,1,6,5,0,2,4,3,8]).
+game( 1, [1,2,6,4,3,8,5,7,0], [1,2,6,4,3,8,5,0,7]).
+game( 2, [0,5,2,7,8,1,6,4,3], [5,2,0,7,8,1,6,4,3]).
+game( 3, [2,6,5,3,8,7,1,0,4], [0,6,5,2,3,7,1,8,4]).
+game( 4, [7,1,3,5,0,2,4,8,6], [7,1,3,4,0,2,8,5,6]).
+game( 5, [1,4,6,8,3,0,5,7,2], [8,1,6,5,4,3,0,7,2]).
+game( 6, [2,0,6,3,5,8,4,1,7], [2,5,6,1,8,0,3,4,7]).
+game( 7, [2,3,7,0,1,8,4,6,5], [2,7,8,1,6,3,4,5,0]).
+game( 8, [5,8,6,2,7,3,4,0,1], [5,6,3,0,7,8,2,4,1]).
+game( 9, [3,5,6,1,2,8,4,7,0], [1,3,5,8,2,6,4,0,7]).
+game(10, [5,1,2,8,6,7,3,4,0], [1,2,0,5,3,7,6,8,4]).
+game(11, [4,3,6,0,2,5,1,7,8], [4,3,5,1,0,2,7,6,8]).
+game(12, [2,1,3,7,0,6,5,8,4], [1,6,8,7,2,3,0,5,4]).
+game(13, [1,0,6,3,5,8,2,4,7], [1,5,7,3,8,4,2,6,0]).
+game(14, [4,2,3,6,0,5,7,8,1], [0,5,8,4,3,2,6,7,1]).
+game(15, [6,3,8,0,2,5,1,7,4], [1,2,0,5,8,6,7,3,4]).
+game(16, [5,3,6,2,1,4,0,7,8], [3,1,6,7,5,4,8,2,0]).
+game(17, [1,0,6,8,3,2,5,7,4], [8,1,7,2,5,6,0,3,4]).
+game(18, [3,4,7,1,0,5,2,8,6], [4,7,2,5,1,6,3,8,0]).
+game(19, [4,1,7,8,3,0,5,6,2], [0,7,2,4,8,1,3,6,5]).
+game(20, [7,8,3,2,0,5,4,1,6], [6,5,7,8,2,3,0,4,1]).
+game(21, [5,0,1,8,4,2,3,7,6], [3,8,4,6,1,2,0,7,5]).
+game(22, [1,2,0,7,4,5,3,6,8], [6,3,4,7,0,1,8,2,5]).
+game(23, [8,5,2,0,6,7,4,1,3], [1,6,0,7,5,2,3,8,4]).
+game(24, [5,1,0,6,8,2,7,4,3], [3,1,5,4,0,7,6,2,8]).
+game(25, [2,8,3,0,1,5,4,7,6], [6,3,4,1,2,7,0,5,8]).
+game(26, [1,7,5,4,0,3,2,8,6], [0,7,2,5,8,6,4,3,1]).
+game(27, [6,1,2,5,8,0,4,7,3], [0,4,8,1,7,3,2,5,6]).
+game(28, [2,4,6,7,0,5,3,1,8], [1,8,3,4,5,7,0,6,2]).
+game(29, [2,0,1,6,8,4,3,7,5], [0,5,7,3,8,4,1,6,2]).
+game(30, [0,2,6,8,3,7,5,1,4], [4,2,5,1,3,8,6,7,0]).
+
+idastar(_, _, _):-retract(limit(_)),fail.
+idastar(Initial, Final, Moves):- value(Initial, Final, F),asserta(limit(F)),
+  retract(limit(Limit)),asserta(limit(32767)),idastar_1([Initial], Final, 0, F, Limit, Moves), !.
+
+idastar_1([Final|_], Final, _, _, _, []):-!.
+idastar_1(Posns0, Final, G, F, Limit, [Move|Moves]):-
+  F <= Limit, !,Posns0 = [Posn|Posns], update(Posn, Move, Posn1),
+  not(member(Posn1, Posns)),value(Posn1, Final, H1),
+  G1 = G + 1,
+  F1 = G1 + H1,
+  idastar_1([Posn1|Posns0], Final, G1, F1, Limit, Moves).
+idastar_1(_, _, _, F, _, _):-
+  limit(NextLimit),F < NextLimit, retract(limit(_)), !,
+  asserta(limit(F)), fail.
+
+member(X, [X|_]).
+member(X, [_|Xs]):-member(X, Xs).
+
+update([0,B,C,D,E,F,G,H,I], B, [B,0,C,D,E,F,G,H,I]).
+update([0,B,C,D,E,F,G,H,I], D, [D,B,C,0,E,F,G,H,I]).
+update([A,0,C,D,E,F,G,H,I], A, [0,A,C,D,E,F,G,H,I]).
+update([A,0,C,D,E,F,G,H,I], C, [A,C,0,D,E,F,G,H,I]).
+update([A,0,C,D,E,F,G,H,I], E, [A,E,C,D,0,F,G,H,I]).
+update([A,B,0,D,E,F,G,H,I], B, [A,0,B,D,E,F,G,H,I]).
+update([A,B,0,D,E,F,G,H,I], F, [A,B,F,D,E,0,G,H,I]).
+update([A,B,C,0,E,F,G,H,I], A, [0,B,C,A,E,F,G,H,I]).
+update([A,B,C,0,E,F,G,H,I], E, [A,B,C,E,0,F,G,H,I]).
+update([A,B,C,0,E,F,G,H,I], G, [A,B,C,G,E,F,0,H,I]).
+update([A,B,C,D,0,F,G,H,I], B, [A,0,C,D,B,F,G,H,I]).
+update([A,B,C,D,0,F,G,H,I], D, [A,B,C,0,D,F,G,H,I]).
+update([A,B,C,D,0,F,G,H,I], F, [A,B,C,D,F,0,G,H,I]).
+update([A,B,C,D,0,F,G,H,I], H, [A,B,C,D,H,F,G,0,I]).
+update([A,B,C,D,E,0,G,H,I], C, [A,B,0,D,E,C,G,H,I]).
+update([A,B,C,D,E,0,G,H,I], E, [A,B,C,D,0,E,G,H,I]).
+update([A,B,C,D,E,0,G,H,I], I, [A,B,C,D,E,I,G,H,0]).
+update([A,B,C,D,E,F,0,H,I], D, [A,B,C,0,E,F,D,H,I]).
+update([A,B,C,D,E,F,0,H,I], H, [A,B,C,D,E,F,H,0,I]).
+update([A,B,C,D,E,F,G,0,I], E, [A,B,C,D,0,F,G,E,I]).
+update([A,B,C,D,E,F,G,0,I], G, [A,B,C,D,E,F,0,G,I]).
+update([A,B,C,D,E,F,G,0,I], I, [A,B,C,D,E,F,G,I,0]).
+update([A,B,C,D,E,F,G,H,0], F, [A,B,C,D,E,0,G,H,F]).
+update([A,B,C,D,E,F,G,H,0], H, [A,B,C,D,E,F,G,0,H]).
+
+
+value(Current, Final, Value):-
+  value_1(Current, Final, 0, 0, Value).
+  
+value_1([], _, _, Value, Value).  
+value_1([0|Tiles], Final, N, Value0, Value):-!,
+  N1 = N + 1,
+  value_1(Tiles, Final, N1, Value0, Value).
+value_1([Tile|Tiles], Final, N, Value0, Value):-
+  location(Final, Tile, 0, Row1, Col1),
+
+  Value1 = Value0 + abs(Row1 - N div 3) + abs(Col1 - N mod 3),
+  N1 = N + 1,
+  value_1(Tiles, Final, N1, Value1, Value).
+
+
+location([Tile|_], Tile, N, Row, Col):-!,
+  Row = N div 3, 
+  Col = N mod 3.
+location([_|Tiles], Tile, N, Row, Col):-
+  N1 = N + 1,
+  location(Tiles, Tile, N1, Row, Col).
