@@ -1,0 +1,19 @@
+predicates
+ start
+fact(real,real)
+goal
+clearwindow,
+ start.
+clauses
+ start:-
+ write("Enter non negative number = "),
+ readreal(Num),
+ Result = 1.0,
+ fact(Num,Result).
+ fact(Num,Result):-
+ Num <> 0,
+ NewResult = Num * Result,
+ NewNum = Num - 1,
+ fact(NewNum,NewResult).
+ fact(_,Result):-
+ write("Factorial = ",Result),nl.
